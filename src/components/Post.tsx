@@ -7,18 +7,17 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { useAppSelector } from "../hooks/hooks";
-import { IPost } from "../types/IPosts";
 import { Entypo, Ionicons, Octicons } from "@expo/vector-icons";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/ru";
 
-interface IEditMode {
+interface Props {
   handleOpenSwipeableModal: (value: string) => void;
   index: number;
 }
 
-type CombinedInterface = IPost & IEditMode;
+type CombinedInterface = IPost & Props;
 
 const Posts: React.FC<CombinedInterface> = ({
   user,

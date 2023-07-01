@@ -5,15 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   FlatList,
-  Modal,
-  Image,
-  SafeAreaView,
-  TextInput,
   Keyboard,
-  TouchableWithoutFeedback,
-  TouchableOpacity,
-  ScrollView,
-  KeyboardAvoidingView,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import {
@@ -22,9 +14,6 @@ import {
   Octicons,
   Fontisto,
   FontAwesome,
-  AntDesign,
-  MaterialCommunityIcons,
-  Feather,
 } from "@expo/vector-icons";
 import {
   addPosts,
@@ -32,18 +21,19 @@ import {
   editPosts,
   getPosts,
 } from "../redux/posts/postsAction";
-import Posts from "../components/Posts";
+import Posts from "../components/Post";
 import * as ImagePicker from "expo-image-picker";
-import { Formik } from "formik";
-import SwipeableModal from "../components/SwipeableModal";
+import SwipeModal from "../components/SwipeModal";
 import EditModal from "../components/EdtModal";
+import Toast from "react-native-root-toast";
+import AddPostModal from "../components/AddPostModal";
 
 export default function Homepage({ navigation }: any) {
   const dispatch = useAppDispatch();
   const { isAdmin } = useAppSelector((state) => state.authorization);
   const { posts, isLoading, error } = useAppSelector((state) => state.posts);
 
-  const [showModal, setShowModal] = useState(false);
+  const [addPostModal, setAddPostModal] = useState(false);
   const [imageURL, setImageURL] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -51,8 +41,8 @@ export default function Homepage({ navigation }: any) {
 
   const textInputRef = useRef<any>();
   const desc = posts
-    .filter((i) => i._id === postId)
-    .map((post) => post.description);
+    .filter((i: { _id: string }) => i._id === postId)
+    .map((post: { description: any }) => post.description);
 
   const selectPhoto = async () => {
     try {
@@ -60,7 +50,16 @@ export default function Homepage({ navigation }: any) {
         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (status !== "granted") {
-        console.log("Отказано в доступе к медиатеке");
+        let toast = Toast.show("Отказано в доступе к медиатеке", {
+          duration: Toast.durations.LONG,
+          backgroundColor: "green",
+          opacity: 1,
+          animation: true,
+          position: Toast.positions.BOTTOM - 50,
+        });
+        setTimeout(function hideToast() {
+          Toast.hide(toast);
+        }, 2000);
         return;
       }
 
@@ -72,12 +71,30 @@ export default function Homepage({ navigation }: any) {
 
       if (!result.canceled) {
         setImageURL(result.assets?.[0].uri);
-        setShowModal(true);
+        setAddPostModal(true);
       } else {
-        console.log("Отменено пользователем");
+        let toast = Toast.show("Отменено пользователем", {
+          duration: Toast.durations.LONG,
+          backgroundColor: "green",
+          opacity: 1,
+          animation: true,
+          position: Toast.positions.BOTTOM - 50,
+        });
+        setTimeout(function hideToast() {
+          Toast.hide(toast);
+        }, 2000);
       }
     } catch (err) {
-      console.log("Ошибка выбора фотографии:", err);
+      let toast = Toast.show(`Ошибка выбора фотографии:${err}`, {
+        duration: Toast.durations.LONG,
+        backgroundColor: "green",
+        opacity: 1,
+        animation: true,
+        position: Toast.positions.BOTTOM - 50,
+      });
+      setTimeout(function hideToast() {
+        Toast.hide(toast);
+      }, 2000);
     }
   };
 
@@ -107,9 +124,18 @@ export default function Homepage({ navigation }: any) {
       await dispatch(addPosts(formData));
       resetForm();
       Keyboard.dismiss();
-      setShowModal(false);
+      setAddPostModal(false);
     } catch (err) {
-      console.log("Ошибка при отправке данных:", err);
+      let toast = Toast.show(`Ошибка при отправке данных:${err}`, {
+        duration: Toast.durations.LONG,
+        backgroundColor: "green",
+        opacity: 1,
+        animation: true,
+        position: Toast.positions.BOTTOM - 50,
+      });
+      setTimeout(function hideToast() {
+        Toast.hide(toast);
+      }, 2000);
     }
   };
 
@@ -224,148 +250,26 @@ export default function Homepage({ navigation }: any) {
           />
         </View>
       </View>
-      <Modal visible={showModal} animationType="slide">
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <Formik
-              initialValues={{
-                description: "",
-                image: File,
-              }}
-              onSubmit={handleFormSubmit}
-            >
-              {({ handleChange, values, handleBlur, handleSubmit }) => (
-                <View>
-                  <View style={styles.modalHeader}>
-                    <AntDesign
-                      name="close"
-                      size={28}
-                      color="black"
-                      onPress={() => setShowModal(false)}
-                    />
-                    <View style={styles.textBlock}>
-                      <Text style={styles.firstText}>Новая публикация</Text>
-                      <TouchableOpacity onPress={handleSubmit as any}>
-                        <Text style={styles.secondText}>Поделиться</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.modalMain}>
-                    <Image style={styles.modalImg} source={{ uri: imageURL }} />
-                    <TextInput
-                      style={styles.postDesc}
-                      placeholder="Добавьте подпись..."
-                      value={values.description}
-                      onChangeText={handleChange("description")}
-                      onBlur={handleBlur("description")}
-                    />
-                  </View>
-                </View>
-              )}
-            </Formik>
-          </SafeAreaView>
-        </TouchableWithoutFeedback>
-      </Modal>
-      <SwipeableModal
+      <AddPostModal
+        addPostModal={addPostModal}
+        handleFormSubmit={handleFormSubmit}
+        setAddPostModal={setAddPostModal}
+        imageURL={imageURL}
+      />
+      <SwipeModal
         showEditModal={showEditModal}
         onClose={handleCloseSwipeableModal}
-      >
-        <View>
-          <View style={{ alignItems: "center" }}>
-            <View style={styles.editModalSwap}></View>
-          </View>
-          <View style={styles.saveGeneralBlock}>
-            <View style={styles.saveBlock}>
-              <Octicons name="bookmark" size={24} />
-              <Text style={{ fontSize: 12, fontFamily: "mt-regular" }}>
-                Сохранить
-              </Text>
-            </View>
-            <View style={styles.saveBlock}>
-              <MaterialCommunityIcons name="qrcode-scan" size={24} />
-              <Text style={{ fontSize: 12, fontFamily: "mt-regular" }}>
-                QR-код
-              </Text>
-            </View>
-          </View>
-          <View style={styles.generalEditBlock}>
-            <TouchableOpacity onPress={handleChangePostModalOpen}>
-              <View style={styles.editBlock}>
-                <Octicons name="pencil" size={28} color="black" />
-                <Text style={styles.editText}>Изменить</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleDeletePost}>
-              <View style={styles.deleteBlock}>
-                <Feather name="trash" size={24} color="red" />
-                <Text style={styles.deleteText}>Удалить</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </SwipeableModal>
-      <EditModal edit={edit}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <Formik
-            initialValues={{
-              description: `${desc}`,
-            }}
-            onSubmit={handleChangePostFormSubmit}
-          >
-            {({ handleChange, values, handleBlur, handleSubmit }) => (
-              <View>
-                <View style={styles.editModalHeder}>
-                  <Text
-                    style={styles.headerText}
-                    onPress={handleChangePostModalClose}
-                  >
-                    Отмена
-                  </Text>
-                  <Text style={{ fontFamily: "mt-medium", fontSize: 18 }}>
-                    Редактировать
-                  </Text>
-                  <Text onPress={handleSubmit as any} style={styles.headerText}>
-                    Готово
-                  </Text>
-                </View>
-                <View>
-                  {posts
-                    .filter((i) => i._id === postId)
-                    .map((post) => (
-                      <View key={post._id}>
-                        <View style={styles.changePostHeader}>
-                          <Image
-                            style={styles.changePostUserAvatar}
-                            source={{ uri: post.user.avatar }}
-                          />
-                          <Text style={styles.changePostHeaderText}>
-                            {post.user.username}
-                          </Text>
-                        </View>
-                        <View style={{ height: "100%" }}>
-                          <ScrollView>
-                            <Image
-                              style={styles.changePostImg}
-                              source={{ uri: post.image }}
-                            />
-                            <TextInput
-                              placeholder="Добавьте подпись"
-                              style={styles.changePostInput}
-                              ref={textInputRef}
-                              value={values.description}
-                              onChangeText={handleChange("description")}
-                              onBlur={handleBlur("description")}
-                            />
-                          </ScrollView>
-                        </View>
-                      </View>
-                    ))}
-                </View>
-              </View>
-            )}
-          </Formik>
-        </SafeAreaView>
-      </EditModal>
+        changePostModal={handleChangePostModalOpen}
+        handleDeletePost={handleDeletePost}
+      />
+      <EditModal
+        edit={edit}
+        desc={desc}
+        changePostForm={handleChangePostFormSubmit}
+        changePostModalClose={handleChangePostModalClose}
+        postId={postId}
+        textInputRef={textInputRef}
+      />
     </View>
   );
 }
@@ -415,123 +319,5 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 10,
-  },
-  modalImg: {
-    width: 50,
-    height: 70,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    alignContent: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: "#DBDBDB",
-  },
-  firstText: {
-    fontSize: 16,
-    fontFamily: "mt-medium",
-  },
-  secondText: {
-    fontSize: 18,
-    color: "#0095F6",
-  },
-  textBlock: {
-    flexDirection: "row",
-  },
-  modalMain: {
-    flexDirection: "row",
-    paddingVertical: 15,
-    paddingLeft: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#DBDBDB",
-  },
-  postDesc: {
-    fontSize: 16,
-    paddingLeft: 10,
-  },
-  editModalSwap: {
-    height: 5,
-    width: 50,
-    borderRadius: 15,
-    backgroundColor: "#ebd8d8",
-  },
-  saveBlock: {
-    backgroundColor: "#ebd8d8",
-    width: 170,
-    height: 80,
-    borderRadius: 15,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  saveGeneralBlock: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingTop: 20,
-  },
-  generalEditBlock: {
-    backgroundColor: "#ebd8d8",
-    width: "100%",
-    marginTop: 10,
-    borderRadius: 15,
-  },
-  editBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#dbc8c8",
-    padding: 10,
-  },
-  editText: {
-    fontSize: 16,
-    paddingLeft: 5,
-  },
-  deleteText: {
-    fontSize: 16,
-    paddingLeft: 5,
-    color: "red",
-  },
-  deleteBlock: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-  },
-  editModalHeder: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: "#DBDBDB",
-  },
-  headerText: {
-    fontSize: 16,
-    fontFamily: "mt-regular",
-  },
-  changePostUserAvatar: {
-    borderRadius: 50,
-    width: 40,
-    height: 40,
-    borderWidth: 2,
-    borderColor: "white",
-  },
-  changePostHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderColor: "#DBDBDB",
-    padding: 10,
-  },
-  changePostHeaderText: {
-    fontFamily: "mt-medium",
-    paddingLeft: 5,
-    color: "gray",
-  },
-  changePostImg: {
-    height: 230,
-  },
-  changePostInput: {
-    padding: 20,
   },
 });

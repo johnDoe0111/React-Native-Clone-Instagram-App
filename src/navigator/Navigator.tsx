@@ -10,7 +10,7 @@ import Profile from "../pages/ProfilePage";
 
 const Stack = createNativeStackNavigator();
 
-export default function Navigate({ navigation }: any) {
+export default function Navigate() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {

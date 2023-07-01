@@ -27,7 +27,6 @@ export default function Autorization({ navigation }: any) {
     values: { username: string; password: string },
     { resetForm }: any
   ) => {
-    console.log(values);
     dispatch(authorization(values));
     resetForm();
     Keyboard.dismiss();

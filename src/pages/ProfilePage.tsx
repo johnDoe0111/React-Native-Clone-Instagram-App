@@ -7,11 +7,14 @@ import {
   Fontisto,
   FontAwesome,
 } from "@expo/vector-icons";
+import { Key } from "react";
 
-const Profile = () => {
+const Profile = ({ navigation }: any) => {
   const { user } = useAppSelector((state) => state.authorization);
   const { posts } = useAppSelector((state) => state.posts);
-  const postsLength = posts.filter((i) => i.user._id === user?._id).length;
+  const postsLength = posts.filter(
+    (i: { user: { _id: any } }) => i.user._id === user?._id
+  ).length;
 
   return (
     <View style={styles.container}>
@@ -57,8 +60,8 @@ const Profile = () => {
           </View>
           <View style={styles.imagesBlock}>
             {posts
-              .filter((i) => i.user._id === user?._id)
-              .map((post) => (
+              .filter((i: { user: { _id: any } }) => i.user._id === user?._id)
+              .map((post: { _id: Key | null | undefined; image: any }) => (
                 <View key={post._id}>
                   <Image
                     style={styles.postImage}
@@ -71,11 +74,16 @@ const Profile = () => {
       </View>
       <View style={styles.footer}>
         <View style={styles.footerIcons}>
-          <Entypo name="home" size={28} color="black" />
+          <Entypo
+            onPress={() => navigation.navigate("Homepage")}
+            name="home"
+            size={28}
+            color="black"
+          />
           <Fontisto name="search" size={24} color="black" />
           <Octicons name="diff-added" size={27} color="black" />
           <Octicons name="video" size={30} color="black" />
-          {/* <FontAwesome onPress={() => navigation.navigate('ProfilePage')} name="user-circle" size={24} color="black" /> */}
+          <FontAwesome name="user-circle" size={24} color="black" />
         </View>
       </View>
     </View>
@@ -95,6 +103,7 @@ const styles = StyleSheet.create({
   },
   userBlock: {
     padding: 15,
+    flex: 1,
   },
   avatar: {
     width: 70,

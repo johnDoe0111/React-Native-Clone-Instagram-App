@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IPost, postState } from "../../types/IPosts";
 import { addPosts, deletePost, editPosts, getPosts } from "./postsAction";
 
 const initialState: postState = {

@@ -1,6 +1,6 @@
-import { IUser, userState } from "../../types/IUser";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { authorization, checkAutorization } from "./authorizationAction";
+import Toast from "react-native-root-toast";
 
 const initialState: userState = {
   user: undefined,
@@ -15,7 +15,16 @@ export const authorizationSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(authorization.pending, (state) => {
       state.isAdmin = false;
-      console.log("идет загрузка...");
+      let toast = Toast.show("идет загрузка...", {
+        duration: Toast.durations.LONG,
+        backgroundColor: "green",
+        opacity: 1,
+        animation: true,
+        position: Toast.positions.BOTTOM - 50,
+      });
+      setTimeout(function hideToast() {
+        Toast.hide(toast);
+      }, 2000);
       state.isLoading = true;
     });
     builder.addCase(
@@ -28,7 +37,16 @@ export const authorizationSlice = createSlice({
     );
     builder.addCase(authorization.rejected, (state) => {
       state.isAdmin = false;
-      console.log("Не авторизован");
+      let toast = Toast.show("Не авторизован", {
+        duration: Toast.durations.LONG,
+        backgroundColor: "green",
+        opacity: 1,
+        animation: true,
+        position: Toast.positions.BOTTOM - 50,
+      });
+      setTimeout(function hideToast() {
+        Toast.hide(toast);
+      }, 2000);
       state.isLoading = false;
     });
     builder.addCase(
@@ -36,12 +54,30 @@ export const authorizationSlice = createSlice({
       (state, action: PayloadAction<IUser>) => {
         state.isAdmin = true;
         state.user = action.payload;
-        console.log("done!");
+        let toast = Toast.show("Проверка пользователя успешна", {
+          duration: Toast.durations.LONG,
+          backgroundColor: "green",
+          opacity: 1,
+          animation: true,
+          position: Toast.positions.BOTTOM - 50,
+        });
+        setTimeout(function hideToast() {
+          Toast.hide(toast);
+        }, 2000);
       }
     );
     builder.addCase(checkAutorization.rejected, (state) => {
       state.isAdmin = false;
-      console.log("error");
+      let toast = Toast.show("Такого пользователя нет в системе", {
+        duration: Toast.durations.LONG,
+        backgroundColor: "green",
+        opacity: 1,
+        animation: true,
+        position: Toast.positions.BOTTOM - 50,
+      });
+      setTimeout(function hideToast() {
+        Toast.hide(toast);
+      }, 2000);
     });
   },
 });

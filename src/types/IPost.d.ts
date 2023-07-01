@@ -1,4 +1,4 @@
-export interface IPost {
+interface IPost {
   user: {
     _id: string;
     username: string;
@@ -13,7 +13,7 @@ export interface IPost {
   __v: number;
 }
 
-export type postState = {
+type postState = {
   posts: IPost[];
   isLoading: boolean;
   error: boolean;
