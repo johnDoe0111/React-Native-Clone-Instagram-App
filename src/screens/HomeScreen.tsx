@@ -27,6 +27,7 @@ import SwipeModal from "../components/SwipeModal";
 import EditModal from "../components/EdtModal";
 import Toast from "react-native-root-toast";
 import AddPostModal from "../components/AddPostModal";
+import { toastConfig } from "../constants";
 
 export default function Homepage({ navigation }: any) {
   const dispatch = useAppDispatch();
@@ -50,13 +51,7 @@ export default function Homepage({ navigation }: any) {
         await ImagePicker.requestMediaLibraryPermissionsAsync();
 
       if (status !== "granted") {
-        let toast = Toast.show("Отказано в доступе к медиатеке", {
-          duration: Toast.durations.LONG,
-          backgroundColor: "green",
-          opacity: 1,
-          animation: true,
-          position: Toast.positions.BOTTOM - 50,
-        });
+        let toast = Toast.show("Отказано в доступе к медиатеке", toastConfig);
         setTimeout(function hideToast() {
           Toast.hide(toast);
         }, 2000);
@@ -73,25 +68,13 @@ export default function Homepage({ navigation }: any) {
         setImageURL(result.assets?.[0].uri);
         setAddPostModal(true);
       } else {
-        let toast = Toast.show("Отменено пользователем", {
-          duration: Toast.durations.LONG,
-          backgroundColor: "green",
-          opacity: 1,
-          animation: true,
-          position: Toast.positions.BOTTOM - 50,
-        });
+        let toast = Toast.show("Отменено пользователем", toastConfig);
         setTimeout(function hideToast() {
           Toast.hide(toast);
         }, 2000);
       }
     } catch (err) {
-      let toast = Toast.show(`Ошибка выбора фотографии:${err}`, {
-        duration: Toast.durations.LONG,
-        backgroundColor: "green",
-        opacity: 1,
-        animation: true,
-        position: Toast.positions.BOTTOM - 50,
-      });
+      let toast = Toast.show(`Ошибка выбора фотографии:${err}`,toastConfig);
       setTimeout(function hideToast() {
         Toast.hide(toast);
       }, 2000);
@@ -126,13 +109,7 @@ export default function Homepage({ navigation }: any) {
       Keyboard.dismiss();
       setAddPostModal(false);
     } catch (err) {
-      let toast = Toast.show(`Ошибка при отправке данных:${err}`, {
-        duration: Toast.durations.LONG,
-        backgroundColor: "green",
-        opacity: 1,
-        animation: true,
-        position: Toast.positions.BOTTOM - 50,
-      });
+      let toast = Toast.show(`Ошибка при отправке данных:${err}`, toastConfig);
       setTimeout(function hideToast() {
         Toast.hide(toast);
       }, 2000);

@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
-import Autorization from "../pages/AutorizationPage";
-import Homepage from "../pages/Homepage";
+import Autorization from "../screens/AutorizationScreen";
+import Homepage from "../screens/HomeScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { useAppDispatch, useAppSelector } from "../hooks/hooks";
 import { checkAutorization } from "../redux/user/authorizationAction";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Profile from "../pages/ProfilePage";
+import Profile from "../screens/ProfileScreen";
 
 const Stack = createNativeStackNavigator();
 
